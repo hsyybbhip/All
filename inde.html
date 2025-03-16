@@ -1,0 +1,82 @@
+<!doctype html>
+     <html lang="en">
+     <head>
+         <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <title>DreamCollab</title>
+         <style>
+             body {
+                 font-family: Arial, sans-serif;
+                 padding: 20px;
+             }
+             h1 {
+                 color: #007bff;
+             }
+             form {
+                 margin-bottom: 20px;
+             }
+             input {
+                 display: block;
+                 margin: 10px 0;
+                 padding: 8px;
+                 width: 100%;
+                 max-width: 300px;
+             }
+             button {
+                 padding: 10px 20px;
+                 background-color: #007bff;
+                 color: white;
+                 border: none;
+                 cursor: pointer;
+             }
+             button:hover {
+                 background-color: #0056b3;
+             }
+         </style>
+     </head>
+     <body>
+         <h1>DreamCollab</h1>
+         <form id="projectForm">
+             <input type="text" id="title" placeholder="Project Title" required>
+             <input type="text" id="description" placeholder="Project Description" required>
+             <input type="text" id="creator" placeholder="Your Name" required>
+             <button type="submit">Add Project</button>
+         </form>
+
+         <h2>Projects</h2>
+         <ul id="projectList"></ul>
+
+         <script>
+             const projectForm = document.getElementById('projectForm');
+             const projectList = document.getElementById('projectList');
+             let projects = [];
+
+             projectForm.addEventListener('submit', (e) => {
+                 e.preventDefault();
+                 const title = document.getElementById('title').value;
+                 const description = document.getElementById('description').value;
+                 const creator = document.getElementById('creator').value;
+
+                 const newProject = { title, description, creator };
+                 projects.push(newProject);
+                 displayProjects();
+
+                 // Clear the form
+                 projectForm.reset();
+             });
+
+             function displayProjects() {
+                 projectList.innerHTML = '';
+                 projects.forEach((project) => {
+                     const li = document.createElement('li');
+                     li.innerHTML = `
+                         <h3>${project.title}</h3>
+                         <p>${project.description}</p>
+                         <small>Created by: ${project.creator}</small>
+                     `;
+                     projectList.appendChild(li);
+                 });
+             }
+         </script>
+     
+     </body></html>
