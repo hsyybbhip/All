@@ -1,82 +1,865 @@
 <!doctype html>
-     <html lang="en">
-     <head>
-         <meta charset="UTF-8">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <title>DreamCollab</title>
-         <style>
-             body {
-                 font-family: Arial, sans-serif;
-                 padding: 20px;
-             }
-             h1 {
-                 color: #007bff;
-             }
-             form {
-                 margin-bottom: 20px;
-             }
-             input {
-                 display: block;
-                 margin: 10px 0;
-                 padding: 8px;
-                 width: 100%;
-                 max-width: 300px;
-             }
-             button {
-                 padding: 10px 20px;
-                 background-color: #007bff;
-                 color: white;
-                 border: none;
-                 cursor: pointer;
-             }
-             button:hover {
-                 background-color: #0056b3;
-             }
-         </style>
-     </head>
-     <body>
-         <h1>DreamCollab</h1>
-         <form id="projectForm">
-             <input type="text" id="title" placeholder="Project Title" required>
-             <input type="text" id="description" placeholder="Project Description" required>
-             <input type="text" id="creator" placeholder="Your Name" required>
-             <button type="submit">Add Project</button>
-         </form>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Habit Tracker</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f6f8fb;
+            --surface: rgba(255, 255, 255, 0.9);
+            --surface-dark: rgba(27, 38, 59, 0.8);
+            --text: #1f2933;
+            --muted: #52616b;
+            --primary: #4c6ef5;
+            --primary-dark: #364fc7;
+            --accent: #12b886;
+            --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+            --radius: 18px;
+            --transition: 200ms ease;
+        }
 
-         <h2>Projects</h2>
-         <ul id="projectList"></ul>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --surface: rgba(15, 23, 42, 0.95);
+                --surface-dark: rgba(15, 23, 42, 0.85);
+                --text: #e2e8f0;
+                --muted: #94a3b8;
+                --shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+            }
+        }
 
-         <script>
-             const projectForm = document.getElementById('projectForm');
-             const projectList = document.getElementById('projectList');
-             let projects = [];
+        * {
+            box-sizing: border-box;
+        }
 
-             projectForm.addEventListener('submit', (e) => {
-                 e.preventDefault();
-                 const title = document.getElementById('title').value;
-                 const description = document.getElementById('description').value;
-                 const creator = document.getElementById('creator').value;
+        body {
+            margin: 0;
+            font-family: "Inter", "Segoe UI", sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(76, 110, 245, 0.18), transparent 45%),
+                radial-gradient(circle at 90% 10%, rgba(18, 184, 134, 0.15), transparent 50%),
+                var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 38px 18px 72px;
+        }
 
-                 const newProject = { title, description, creator };
-                 projects.push(newProject);
-                 displayProjects();
+        .app-shell {
+            max-width: 1080px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
 
-                 // Clear the form
-                 projectForm.reset();
-             });
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(18px);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px;
+            border: 1px solid rgba(76, 110, 245, 0.08);
+        }
 
-             function displayProjects() {
-                 projectList.innerHTML = '';
-                 projects.forEach((project) => {
-                     const li = document.createElement('li');
-                     li.innerHTML = `
-                         <h3>${project.title}</h3>
-                         <p>${project.description}</p>
-                         <small>Created by: ${project.creator}</small>
-                     `;
-                     projectList.appendChild(li);
-                 });
-             }
-         </script>
-     
-     </body></html>
+        .hero {
+            display: grid;
+            gap: 12px;
+            padding: 36px 32px;
+            background: linear-gradient(145deg, rgba(76, 110, 245, 0.12), rgba(18, 184, 134, 0.08), rgba(255, 255, 255, 0.2));
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .quote {
+            margin-top: 10px;
+            padding-left: 18px;
+            border-left: 3px solid var(--accent);
+            font-style: italic;
+        }
+
+        .layout-grid {
+            display: grid;
+            gap: 28px;
+        }
+
+        @media (min-width: 960px) {
+            .layout-grid {
+                grid-template-columns: 1.15fr 0.85fr;
+            }
+        }
+
+        form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .input-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        @media (min-width: 640px) {
+            .input-grid {
+                grid-template-columns: 1fr auto;
+            }
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            border-radius: 12px;
+            border: 1px solid rgba(82, 97, 107, 0.18);
+            padding: 14px 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            color: inherit;
+            background: rgba(255, 255, 255, 0.85);
+            transition: border var(--transition), box-shadow var(--transition);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 144px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: rgba(76, 110, 245, 0.6);
+            box-shadow: 0 0 0 4px rgba(76, 110, 245, 0.18);
+        }
+
+        button {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+        }
+
+        .primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 16px 30px rgba(76, 110, 245, 0.24);
+        }
+
+        .primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .secondary {
+            background: rgba(76, 110, 245, 0.12);
+            color: var(--primary-dark);
+        }
+
+        .secondary:hover {
+            background: rgba(76, 110, 245, 0.18);
+        }
+
+        .ghost {
+            background: transparent;
+            color: var(--primary-dark);
+            padding: 10px 18px;
+        }
+
+        .ghost:hover {
+            background: rgba(76, 110, 245, 0.12);
+        }
+
+        .danger {
+            background: rgba(240, 82, 82, 0.1);
+            color: #c81e1e;
+        }
+
+        .danger:hover {
+            background: rgba(240, 82, 82, 0.18);
+        }
+
+        .section-header {
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .chip {
+            background: rgba(76, 110, 245, 0.12);
+            color: var(--primary-dark);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        @media (min-width: 720px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 18px;
+            display: grid;
+            gap: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+        }
+
+        .stat .label {
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .stat .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat .helper {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .habit-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .habit-card {
+            display: grid;
+            gap: 16px;
+            padding: 24px;
+        }
+
+        .habit-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .habit-header h3 {
+            margin: 0 0 4px;
+            font-size: 1.3rem;
+        }
+
+        .habit-header p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .habit-progress {
+            display: grid;
+            gap: 8px;
+        }
+
+        .progress-track {
+            position: relative;
+            background: rgba(76, 110, 245, 0.12);
+            height: 10px;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: inherit;
+            transition: width 220ms ease;
+        }
+
+        .habit-progress span {
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .habit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+        }
+
+        .habit-day {
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(255, 255, 255, 0.65);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 12px;
+            transition: border var(--transition), box-shadow var(--transition), transform var(--transition);
+            cursor: pointer;
+        }
+
+        .habit-day.today {
+            border-color: rgba(18, 184, 134, 0.45);
+            box-shadow: 0 12px 25px rgba(18, 184, 134, 0.17);
+            transform: translateY(-1px);
+        }
+
+        .habit-day input {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid rgba(148, 163, 184, 0.6);
+            appearance: none;
+            display: grid;
+            place-items: center;
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .habit-day input:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .habit-day input:checked::after {
+            content: "?";
+            font-size: 0.75rem;
+            color: #fff;
+        }
+
+        .weekday {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .day-number {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .empty-state {
+            margin: 0;
+            text-align: center;
+            padding: 48px 18px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            border: 2px dashed rgba(76, 110, 245, 0.25);
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(76, 110, 245, 0.12);
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .reflection textarea {
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .habits-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .habits-footer button {
+            margin-left: auto;
+        }
+
+        .habits-footer button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="hero card">
+            <h1>Habit Compass</h1>
+            <p>Build the life you want by stacking small wins day after day. Track your habits, celebrate progress, and stay mindful with daily reflections.</p>
+            <p class="quote" data-quote></p>
+        </header>
+
+        <main class="layout-grid">
+            <section class="card">
+                <div class="section-header">
+                    <h2>Add A Habit</h2>
+                </div>
+                <form id="habitForm" autocomplete="off">
+                    <div class="input-grid">
+                        <label>
+                            Habit name
+                            <input type="text" id="habitName" placeholder="e.g. Morning journaling" required minlength="2" maxlength="60">
+                        </label>
+                        <label>
+                            Weekly goal
+                            <input type="number" id="habitGoal" value="5" min="1" max="7" step="1">
+                        </label>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="primary">Add to tracker</button>
+                        <span class="hint">Set a goal between 1 and 7 to reflect how often you want to complete this habit each week.</span>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card stats">
+                <div class="section-header">
+                    <h2>This Week</h2>
+                    <span class="chip" data-week-range></span>
+                </div>
+                <div class="stats-grid">
+                    <article class="stat">
+                        <span class="label">Total Habits</span>
+                        <span class="value" data-total-habits>0</span>
+                        <span class="helper" data-new-habit-helper></span>
+                    </article>
+                    <article class="stat">
+                        <span class="label">Weekly Check-ins</span>
+                        <span class="value" data-weekly-checkins>0 / 0</span>
+                        <span class="helper">All recorded in this 7-day window</span>
+                    </article>
+                    <article class="stat">
+                        <span class="label">Completion Rate</span>
+                        <span class="value" data-completion-rate>0%</span>
+                        <span class="helper">Based on your personal goals</span>
+                    </article>
+                    <article class="stat">
+                        <span class="label">Today's Wins</span>
+                        <span class="value" data-today-progress>0</span>
+                        <span class="helper">Habits completed so far today</span>
+                    </article>
+                </div>
+                <div class="habits-footer">
+                    <button type="button" id="resetWeekButton" class="secondary" disabled>Reset this week</button>
+                </div>
+            </section>
+        </main>
+
+        <section class="card">
+            <div class="section-header">
+                <h2>Your Habits</h2>
+                <span class="hint">Check in by tapping the day once you complete a habit.</span>
+            </div>
+            <div class="habit-list" data-habit-list>
+                <p class="empty-state">Add your first habit to start tracking. Your check-ins for the week will show up here.</p>
+            </div>
+        </section>
+
+        <section class="card reflection">
+            <div class="section-header">
+                <h2>Daily Reflection</h2>
+                <span class="chip" data-reflection-date></span>
+            </div>
+            <textarea id="dailyReflection" placeholder="How are you feeling about your habits today? Wins, blockers, lessons?"></textarea>
+            <p class="hint">Saved automatically for today.</p>
+        </section>
+    </div>
+
+    <script>
+        const STORAGE_KEY = "simpleHabitTrackerHabitsV1";
+        const REFLECTION_KEY_PREFIX = "simpleHabitTrackerReflection";
+
+        const habitForm = document.getElementById("habitForm");
+        const habitNameInput = document.getElementById("habitName");
+        const habitGoalInput = document.getElementById("habitGoal");
+        const habitList = document.querySelector("[data-habit-list]");
+        const weekRangeEl = document.querySelector("[data-week-range]");
+        const totalHabitsEl = document.querySelector("[data-total-habits]");
+        const weeklyCheckinsEl = document.querySelector("[data-weekly-checkins]");
+        const completionRateEl = document.querySelector("[data-completion-rate]");
+        const todayProgressEl = document.querySelector("[data-today-progress]");
+        const newHabitHelper = document.querySelector("[data-new-habit-helper]");
+        const resetWeekButton = document.getElementById("resetWeekButton");
+        const quoteEl = document.querySelector("[data-quote]");
+        const reflectionTextarea = document.getElementById("dailyReflection");
+        const reflectionDateBadge = document.querySelector("[data-reflection-date]");
+
+        const today = new Date();
+        const todayIso = formatISODate(today);
+        const reflectionKey = `${REFLECTION_KEY_PREFIX}-${todayIso}`;
+
+        let habits = loadHabits();
+
+        habitForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const name = habitNameInput.value.trim();
+            const goalValue = clampGoal(habitGoalInput.value);
+            if (!name) {
+                habitNameInput.focus();
+                return;
+            }
+
+            const newHabit = {
+                id: createId(),
+                name,
+                goalPerWeek: goalValue,
+                completions: {},
+                createdAt: todayIso
+            };
+
+            habits = [newHabit, ...habits];
+            saveHabits();
+            habitForm.reset();
+            habitGoalInput.value = goalValue;
+            habitNameInput.focus();
+            renderHabits();
+        });
+
+        resetWeekButton.addEventListener("click", () => {
+            if (!habits.length) {
+                return;
+            }
+            const week = getWeekDates();
+            const weekDates = week.map((day) => day.iso);
+            const hasCompletions = habits.some((habit) => weekDates.some((date) => habit.completions?.[date]));
+            if (!hasCompletions) {
+                return;
+            }
+            const confirmed = window.confirm("Reset all check-ins for the current week? This cannot be undone.");
+            if (!confirmed) {
+                return;
+            }
+            habits = habits.map((habit) => {
+                const updated = { ...habit };
+                weekDates.forEach((date) => {
+                    if (updated.completions) {
+                        delete updated.completions[date];
+                    }
+                });
+                return updated;
+            });
+            saveHabits();
+            renderHabits();
+        });
+
+        reflectionTextarea.addEventListener("input", () => {
+            const value = reflectionTextarea.value.trim();
+            if (value) {
+                localStorage.setItem(reflectionKey, value);
+            } else {
+                localStorage.removeItem(reflectionKey);
+            }
+        });
+
+        function loadHabits() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+                if (!Array.isArray(saved)) {
+                    return [];
+                }
+                return saved.map((habit) => normalizeHabit(habit));
+            } catch (error) {
+                console.warn("Unable to load saved habits", error);
+                return [];
+            }
+        }
+
+        function normalizeHabit(habit) {
+            const goal = clampGoal(habit?.goalPerWeek ?? 5);
+            return {
+                id: habit?.id ?? createId(),
+                name: habit?.name?.trim() || "Untitled habit",
+                goalPerWeek: goal,
+                completions: isPlainObject(habit?.completions) ? habit.completions : {},
+                createdAt: habit?.createdAt ?? todayIso
+            };
+        }
+
+        function saveHabits() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+        }
+
+        function clampGoal(value) {
+            const num = Number(value);
+            if (!Number.isFinite(num)) {
+                return 5;
+            }
+            return Math.min(7, Math.max(1, Math.round(num)));
+        }
+
+        function createId() {
+            if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+                return crypto.randomUUID();
+            }
+            return `habit-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        }
+
+        function isPlainObject(value) {
+            return typeof value === "object" && value !== null && !Array.isArray(value);
+        }
+
+        function formatISODate(date) {
+            return date.toISOString().slice(0, 10);
+        }
+
+        function getWeekDates(baseDate = new Date()) {
+            const start = new Date(baseDate);
+            const day = start.getDay();
+            const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+            start.setDate(diff);
+            start.setHours(0, 0, 0, 0);
+            return Array.from({ length: 7 }, (_, index) => {
+                const current = new Date(start);
+                current.setDate(start.getDate() + index);
+                return {
+                    iso: formatISODate(current),
+                    weekday: current.toLocaleDateString(undefined, { weekday: "short" }),
+                    dayNumber: current.getDate(),
+                    month: current.toLocaleDateString(undefined, { month: "short" }),
+                    year: current.getFullYear(),
+                    fullLabel: current.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })
+                };
+            });
+        }
+
+        function renderHabits() {
+            const week = getWeekDates();
+            habitList.innerHTML = "";
+
+            if (!habits.length) {
+                habitList.innerHTML = '<p class="empty-state">Add your first habit to start tracking. Your check-ins for the week will show up here.</p>';
+                updateSummary(week);
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            habits.forEach((habit) => {
+                const habitCard = document.createElement("article");
+                habitCard.className = "habit-card card";
+
+                const header = document.createElement("div");
+                header.className = "habit-header";
+
+                const info = document.createElement("div");
+                const title = document.createElement("h3");
+                title.textContent = habit.name;
+                const subtitle = document.createElement("p");
+                subtitle.textContent = `Goal: ${habit.goalPerWeek} ${habit.goalPerWeek === 1 ? "check-in" : "check-ins"} this week`;
+                info.append(title, subtitle);
+
+                const actions = document.createElement("div");
+                actions.className = "habit-actions";
+
+                const todayButton = document.createElement("button");
+                todayButton.type = "button";
+                todayButton.className = "ghost";
+                todayButton.textContent = habit.completions?.[todayIso] ? "Undo today" : "Mark today";
+                todayButton.addEventListener("click", () => {
+                    toggleCompletion(habit.id, todayIso, !(habit.completions?.[todayIso]));
+                });
+
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "danger";
+                deleteButton.textContent = "Remove";
+                deleteButton.addEventListener("click", () => {
+                    const confirmed = window.confirm(`Remove the habit "${habit.name}"? This will delete all check-ins.`);
+                    if (!confirmed) {
+                        return;
+                    }
+                    habits = habits.filter((item) => item.id !== habit.id);
+                    saveHabits();
+                    renderHabits();
+                });
+
+                actions.append(todayButton, deleteButton);
+                header.append(info, actions);
+
+                const completedThisWeek = week.filter((day) => habit.completions?.[day.iso]).length;
+                const goal = Math.min(7, Math.max(1, habit.goalPerWeek));
+                const completionPercent = Math.max(0, Math.min(100, Math.round((completedThisWeek / goal) * 100)));
+
+                const progressWrapper = document.createElement("div");
+                progressWrapper.className = "habit-progress";
+
+                const progressTrack = document.createElement("div");
+                progressTrack.className = "progress-track";
+                progressTrack.setAttribute("role", "progressbar");
+                progressTrack.setAttribute("aria-valuemin", "0");
+                progressTrack.setAttribute("aria-valuemax", String(goal));
+                progressTrack.setAttribute("aria-valuenow", String(completedThisWeek));
+
+                const progressBar = document.createElement("div");
+                progressBar.className = "progress-bar";
+                progressBar.style.width = `${completionPercent}%`;
+
+                progressTrack.append(progressBar);
+                const progressLabel = document.createElement("span");
+                progressLabel.textContent = `${completedThisWeek}/${goal} check-ins logged`;
+                progressWrapper.append(progressTrack, progressLabel);
+
+                const grid = document.createElement("div");
+                grid.className = "habit-grid";
+
+                week.forEach((day) => {
+                    const dayLabel = document.createElement("label");
+                    dayLabel.className = "habit-day";
+                    dayLabel.title = day.fullLabel;
+                    if (day.iso === todayIso) {
+                        dayLabel.classList.add("today");
+                    }
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.checked = Boolean(habit.completions?.[day.iso]);
+                    checkbox.setAttribute("aria-label", `${habit.name} on ${day.fullLabel}`);
+                    checkbox.addEventListener("change", (event) => {
+                        toggleCompletion(habit.id, day.iso, event.target.checked);
+                    });
+
+                    const textWrapper = document.createElement("div");
+                    textWrapper.style.display = "grid";
+                    textWrapper.style.gap = "2px";
+                    const weekdaySpan = document.createElement("span");
+                    weekdaySpan.className = "weekday";
+                    weekdaySpan.textContent = day.weekday;
+                    const dayNumberSpan = document.createElement("span");
+                    dayNumberSpan.className = "day-number";
+                    dayNumberSpan.textContent = `${day.dayNumber} ${day.month}`;
+                    textWrapper.append(weekdaySpan, dayNumberSpan);
+
+                    dayLabel.append(checkbox, textWrapper);
+                    grid.append(dayLabel);
+                });
+
+                habitCard.append(header, progressWrapper, grid);
+                fragment.append(habitCard);
+            });
+
+            habitList.append(fragment);
+            updateSummary(week);
+        }
+
+        function toggleCompletion(habitId, dateIso, isComplete) {
+            habits = habits.map((habit) => {
+                if (habit.id !== habitId) {
+                    return habit;
+                }
+                const completions = { ...(habit.completions || {}) };
+                if (isComplete) {
+                    completions[dateIso] = true;
+                } else {
+                    delete completions[dateIso];
+                }
+                return { ...habit, completions };
+            });
+            saveHabits();
+            renderHabits();
+        }
+
+        function updateSummary(week = getWeekDates()) {
+            const totalHabits = habits.length;
+            const totalTargets = habits.reduce((sum, habit) => sum + Math.min(7, Math.max(1, habit.goalPerWeek)), 0);
+            const totalCheckins = habits.reduce((sum, habit) => {
+                return sum + week.reduce((count, day) => count + (habit.completions?.[day.iso] ? 1 : 0), 0);
+            }, 0);
+            const todayCompletions = habits.filter((habit) => habit.completions?.[todayIso]).length;
+            const completionRate = totalTargets ? Math.round((totalCheckins / totalTargets) * 100) : 0;
+
+            totalHabitsEl.textContent = String(totalHabits);
+            newHabitHelper.textContent = totalHabits ? "" : "Tip: Start with 1?3 habits you can sustain.";
+            weeklyCheckinsEl.textContent = `${totalCheckins} / ${totalTargets}`;
+            completionRateEl.textContent = `${Math.min(100, Math.max(0, completionRate))}%`;
+            todayProgressEl.textContent = `${todayCompletions} / ${totalHabits || 1}`;
+
+            const start = week[0];
+            const end = week[week.length - 1];
+            const sameYear = start.year === end.year;
+            const rangeText = `${start.month} ${start.dayNumber}${sameYear ? "" : `, ${start.year}`} ? ${end.month} ${end.dayNumber}, ${end.year}`;
+            weekRangeEl.textContent = rangeText;
+
+            const hasCheckins = totalCheckins > 0;
+            resetWeekButton.disabled = !hasCheckins;
+        }
+
+        function renderQuote() {
+            const quotes = [
+                "Small, consistent actions create lasting change.",
+                "You don?t need more motivation, just one tiny action right now.",
+                "Habits are votes for the person you want to become.",
+                "Win the morning, win the day.",
+                "Momentum comes from keeping promises to yourself.",
+                "Progress is better than perfection?keep showing up.",
+                "Stack your habits with joy and the results will follow.",
+                "Make it easy, make it obvious, make it satisfying.",
+                "Tiny gains compound into remarkable transformations.",
+                "Celebrate the effort, the outcome will take care of itself."
+            ];
+            const hash = Array.from(todayIso).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const quote = quotes[hash % quotes.length];
+            quoteEl.textContent = quote;
+        }
+
+        function renderReflection() {
+            reflectionTextarea.value = localStorage.getItem(reflectionKey) || "";
+            reflectionDateBadge.textContent = today.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+        }
+
+        renderQuote();
+        renderReflection();
+        renderHabits();
+    </script>
+</body>
+</html>
