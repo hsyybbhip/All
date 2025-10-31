@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCanteen | Food Price Tracker</title>
+    <link rel="stylesheet" href="./assets/styles.css">
+    <script defer src="./scripts/app.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar card">
+            <div class="branding">
+                <h1>CampusCanteen</h1>
+                <p>Track real-time pricing, spot deals, and plan the perfect order from the college canteen.</p>
+            </div>
+            <div class="topbar-stats">
+                <article class="stat">
+                    <span class="label">Active Items</span>
+                    <span class="value" data-stat-items>0</span>
+                    <span class="helper">Available on today's menu</span>
+                </article>
+                <article class="stat">
+                    <span class="label">Avg. Price Change</span>
+                    <span class="value" data-stat-change>0%</span>
+                    <span class="helper">Compared to last update</span>
+                </article>
+                <article class="stat">
+                    <span class="label">Last Update</span>
+                    <span class="value" data-stat-updated>--</span>
+                    <span class="helper">Most recent price review</span>
+                </article>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="catalog card">
+                <div class="catalog-header">
+                    <div>
+                        <h2>Food Catalog</h2>
+                        <p>Browse verified canteen items and keep tabs on their price history.</p>
+                    </div>
+                    <button type="button" class="ghost" data-action="reset-filters">Reset filters</button>
+                </div>
+
+                <form class="filters" autocomplete="off">
+                    <label class="search">
+                        <span class="label">Search</span>
+                        <input type="search" name="search" placeholder="Search by name or tag" data-filter-search>
+                    </label>
+                    <label>
+                        <span class="label">Category</span>
+                        <select name="category" data-filter-category>
+                            <option value="all">All</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span class="label">Sort by</span>
+                        <select name="sort" data-filter-sort>
+                            <option value="updated-desc">Latest update</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="name-asc">Name: A to Z</option>
+                        </select>
+                    </label>
+                    <label class="toggle">
+                        <input type="checkbox" data-filter-veg>
+                        <span>Vegetarian only</span>
+                    </label>
+                    <label>
+                        <span class="label">Max price (Rs)</span>
+                        <input type="number" min="0" step="1" data-filter-max-price placeholder="No limit">
+                    </label>
+                </form>
+
+                <div class="item-grid" data-item-grid>
+                    <p class="empty-state">No items match your filters yet. Try tweaking the search criteria.</p>
+                </div>
+            </section>
+
+            <aside class="sidebars">
+                <section class="panel card" data-selected-panel>
+                    <header class="panel-header">
+                        <h2>Price Breakdown</h2>
+                        <span class="chip" data-selected-chip>Pick an item to view insights</span>
+                    </header>
+                    <div class="selected-item" data-selected-item>
+                        <p class="empty-state">Select an item from the catalog to review its price history and record changes.</p>
+                    </div>
+                </section>
+
+                <section class="panel card" data-cart-panel>
+                    <header class="panel-header">
+                        <h2>Order Tray</h2>
+                        <span class="chip" data-cart-chip>Ready to checkout</span>
+                    </header>
+                    <div class="cart" data-cart-container>
+                        <p class="empty-state">Add snacks and meals to plan your next canteen run.</p>
+                    </div>
+                </section>
+
+                <section class="panel card" data-insights-panel>
+                    <header class="panel-header">
+                        <h2>Price Signals</h2>
+                        <span class="chip">Live watchlist</span>
+                    </header>
+                    <ul class="signal-list" data-signal-list>
+                        <li class="empty-state">Price drops and surges appear here as you add updates.</li>
+                    </ul>
+                </section>
+            </aside>
+        </main>
+    </div>
+</body>
+</html>
